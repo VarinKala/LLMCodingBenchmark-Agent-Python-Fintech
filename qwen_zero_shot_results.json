@@ -1,0 +1,127 @@
+[
+    {
+        "id": "FT_01",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\n\ndef calculate_rsi(prices, window=14):\n    delta = prices.diff()\n    gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()\n    loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()\n    rs = gain / loss\n    rsi = 100 - (100 / (1 + rs))\n    return rsi"
+    },
+    {
+        "id": "FT_02",
+        "pass_at_1": 100.0,
+        "sample_code": "import math\nfrom scipy.stats import norm\n\ndef black_scholes_call(S, K, T, r, sigma):\n    d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))\n    d2 = d1 - sigma * math.sqrt(T)\n    call_price = S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2)\n    return call_price"
+    },
+    {
+        "id": "FT_03",
+        "pass_at_1": 100.0,
+        "sample_code": "import math\nfrom scipy.stats import norm\n\ndef calculate_gamma(S, K, T, r, sigma):\n    d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))\n    gamma = (norm.pdf(d1) / (S * sigma * math.sqrt(T)))\n    return gamma"
+    },
+    {
+        "id": "FT_04",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\n\ndef annualized_sharpe_ratio(daily_returns, risk_free_rate=0.0):\n    mean_return = np.mean(daily_returns)\n    std_dev_return = np.std(daily_returns)\n    sharpe_ratio = (mean_return - risk_free_rate) / std_dev_return\n    annualized_sharpe = sharpe_ratio * np.sqrt(252)\n    return annualized_sharpe"
+    },
+    {
+        "id": "FT_05",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\n\ndef compute_log_returns(prices):\n    return np.log(prices / prices.shift(1))"
+    },
+    {
+        "id": "FT_06",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\n\ndef calculate_bollinger_bands(data, window=20, num_std=2):\n    # Calculate the rolling mean\n    rolling_mean = data.rolling(window=window).mean()\n    # Calculate the rolling standard deviation\n    rolling_std = data.rolling(window=window).std()\n    # Calculate the upper band\n    upper_band = rolling_mean + (rolling_std * num_std)\n    # Calculate the lower band\n    lower_band = rolling_mean - (rolling_std * num_std)\n    # Return the bands\n    return pd.DataFrame({\n        'Upper Band': upper_band,\n        'Middle Band': rolling_mean,\n        'Lower Band': lower_band\n    })\n\n# Example usage:\n# df = pd.DataFrame({'Price': [data points]})\n# bollinger_bands = calculate_bollinger_bands(df['Price'])"
+    },
+    {
+        "id": "FT_07",
+        "pass_at_1": 100.0,
+        "sample_code": "import scipy.stats as stats\n\ndef calculate_parametric_var(mean_return, volatility, investment_value):\n    # Calculate the 95% VaR\n    z_score = stats.norm.ppf(0.95)\n    var = investment_value * (mean_return - z_score * volatility)\n    return var"
+    },
+    {
+        "id": "FT_08",
+        "pass_at_1": 100.0,
+        "sample_code": "def find_golden_cross(data):\n    data['SMA_50'] = data['Close'].rolling(window=50).mean()\n    data['SMA_200'] = data['Close'].rolling(window=200).mean()\n    data['Golden_Cross'] = (data['SMA_50'] > data['SMA_200']) & (data['SMA_50'].shift(1) <= data['SMA_200'].shift(1))\n    return data[data['Golden_Cross']]"
+    },
+    {
+        "id": "FT_09",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy_financial as npf\n\ndef calculate_irr(cash_flows):\n    return npf.irr(cash_flows)"
+    },
+    {
+        "id": "FT_10",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_max_drawdown(price_series):\n    cumulative_max = []\n    drawdown_series = []\n\n    for price in price_series:\n        if not cumulative_max:\n            cumulative_max.append(price)\n        else:\n            cumulative_max.append(max(cumulative_max[-1], price))\n    \n    for i in range(len(price_series)):\n        drawdown_series.append((cumulative_max[i] - price_series[i]) / cumulative_max[i])\n    \n    return max(drawdown_series) if drawdown_series else 0"
+    },
+    {
+        "id": "FT_11",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nfrom scipy.stats import norm\n\ndef black_scholes(S, K, T, r, sigma, option_type='call'):\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n    d2 = d1 - sigma * np.sqrt(T)\n    if option_type == 'call':\n        return S * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)\n    else:\n        return K * np.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1)\n\ndef black_scholes_vega(S, K, T, r, sigma):\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n    return S * norm.pdf(d1) * np.sqrt(T)\n\ndef implied_volatility(S, K, T, r, market_price, option_type='call', tol=1e-5, max_iter=100):\n    sigma = 0.20  # initial guess for volatility\n    for _ in range(max_iter):\n        price = black_scholes(S, K, T, r, sigma, option_type)\n        vega = black_scholes_vega(S, K, T, r, sigma)\n        diff = market_price - price\n        if abs(diff) < tol:\n            return sigma\n        sigma += diff / vega\n    return sigma"
+    },
+    {
+        "id": "FT_12",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_beta(stock_returns, market_returns):\n    import numpy as np\n    covariance_matrix = np.cov(stock_returns, market_returns)\n    beta = covariance_matrix[0, 1] / covariance_matrix[1, 1]\n    return beta"
+    },
+    {
+        "id": "FT_13",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\n\ndef simulate_garch11(N, omega=0.1, alpha=0.2, beta=0.7, mu=0, initial_volatility=0.1):\n    # Initialize the volatility and returns arrays\n    volatilities = np.zeros(N)\n    returns = np.zeros(N)\n    \n    # Set the initial volatility\n    volatilities[0] = initial_volatility\n    \n    for t in range(1, N):\n        # Calculate the current volatility\n        volatilities[t] = np.sqrt(omega + alpha * (returns[t-1] - mu)**2 + beta * volatilities[t-1]**2)\n        # Generate the return using the current volatility\n        returns[t] = mu + volatilities[t] * np.random.normal()\n    \n    return returns, volatilities"
+    },
+    {
+        "id": "FT_14",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_sortino_ratio(returns, risk_free_rate):\n    import numpy as np\n    excess_returns = np.array(returns) - risk_free_rate\n    downside_returns = excess_returns[excess_returns < 0]\n    downside_deviation = np.std(downside_returns)\n    sortino_ratio = np.mean(excess_returns) / downside_deviation\n    return sortino_ratio"
+    },
+    {
+        "id": "FT_15",
+        "pass_at_1": 100.0,
+        "sample_code": "def adjust_prices_for_split(prices, split_ratio):\n    \"\"\"\n    Adjust historical stock prices after a split.\n\n    :param prices: List of historical stock prices.\n    :param split_ratio: A tuple representing the split ratio (e.g., (2, 1) for a 2-for-1 split).\n    :return: List of adjusted stock prices.\n    \"\"\"\n    numerator, denominator = split_ratio\n    adjustment_factor = denominator / numerator\n    adjusted_prices = [price * adjustment_factor for price in prices]\n    return adjusted_prices"
+    },
+    {
+        "id": "FT_16",
+        "pass_at_1": 0.0,
+        "sample_code": "import numpy as np\nfrom sklearn.decomposition import PCA\n\ndef find_first_3_pcs(swap_rate_yield_curve):\n    pca = PCA(n_components=3)\n    principal_components = pca.fit_transform(swap_rate_yield_curve)\n    return principal_components"
+    },
+    {
+        "id": "FT_17",
+        "pass_at_1": 100.0,
+        "sample_code": "def macaulay_duration(face_value, coupon_rate, years_to_maturity, yield_to_maturity):\n    total_duration = 0\n    for t in range(1, years_to_maturity + 1):\n        cash_flow = face_value * coupon_rate if t != years_to_maturity else face_value * (1 + coupon_rate)\n        present_value = cash_flow / (1 + yield_to_maturity) ** t\n        total_duration += t * present_value\n    macaulay_duration = total_duration / (face_value / (1 + yield_to_maturity) ** years_to_maturity)\n    return macaulay_duration"
+    },
+    {
+        "id": "FT_18",
+        "pass_at_1": 100.0,
+        "sample_code": "def standardize_returns(r):\n    mean = r.mean()\n    std = r.std()\n    return (r - mean) / std"
+    },
+    {
+        "id": "FT_19",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\nfrom scipy.stats import spearmanr\n\ndef compute_spearman_correlation(prices):\n    \"\"\"\n    Compute the Spearman rank correlation matrix for a portfolio of 5 stocks.\n\n    :param prices: A pandas DataFrame with columns representing stock prices and\n                   rows representing timestamps.\n    :return: A pandas DataFrame representing the Spearman rank correlation matrix.\n    \"\"\"\n    # Ensure the input DataFrame has exactly 5 columns\n    if len(prices.columns) != 5:\n        raise ValueError(\"Input DataFrame must have exactly 5 columns representing stock prices.\")\n    \n    # Compute the Spearman rank correlation matrix\n    correlation_matrix, _ = spearmanr(prices)\n    \n    # Convert the correlation matrix to a pandas DataFrame\n    correlation_df = pd.DataFrame(correlation_matrix, index=prices.columns, columns=prices.columns)\n    \n    return correlation_df"
+    },
+    {
+        "id": "FT_20",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_information_ratio(portfolio_return, benchmark_return, tracking_error):\n    return (portfolio_return - benchmark_return) / tracking_error"
+    },
+    {
+        "id": "FT_21",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nimport pandas as pd\n\ndef calculate_atr(high, low, close, period=14):\n    \"\"\"\n    Calculate the Average True Range (ATR) for a given period.\n\n    :param high: List or array of high prices.\n    :param low: List or array of low prices.\n    :param close: List or array of closing prices.\n    :param period: The period over which to calculate the ATR (default is 14).\n    :return: A pandas Series containing the ATR values.\n    \"\"\"\n    high = pd.Series(high)\n    low = pd.Series(low)\n    close = pd.Series(close)\n\n    # Calculate true range\n    tr1 = high - low\n    tr2 = abs(high - close.shift(1))\n    tr3 = abs(low - close.shift(1))\n    true_range = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)\n\n    # Calculate ATR\n    atr = true_range.rolling(window=period).mean()\n\n    return atr"
+    },
+    {
+        "id": "FT_22",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\n\ndef compute_rolling_correlation(returns1, returns2, window=30):\n    return returns1.rolling(window=window).corr(returns2)"
+    },
+    {
+        "id": "FT_23",
+        "pass_at_1": 100.0,
+        "sample_code": "def portfolio_variance(w1, w2, s1, s2, cov):\n    return w1**2 * s1**2 + w2**2 * s2**2 + 2 * w1 * w2 * cov"
+    },
+    {
+        "id": "FT_24",
+        "pass_at_1": 100.0,
+        "sample_code": "import math\nfrom scipy.stats import norm\n\ndef calculate_vega(S, K, T, r, sigma):\n    \"\"\"\n    Calculate Vega for a European Call Option.\n    \n    Parameters:\n    S (float): Current stock price\n    K (float): Option strike price\n    T (float): Time to maturity in years\n    r (float): Risk-free interest rate\n    sigma (float): Volatility of the underlying asset\n    \n    Returns:\n    float: Vega of the European Call Option\n    \"\"\"\n    d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))\n    vega = S * norm.pdf(d1) * math.sqrt(T)\n    return vega"
+    },
+    {
+        "id": "FT_25",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nfrom scipy.optimize import minimize\n\ndef portfolio_variance(weights, cov_matrix):\n    return weights.T @ cov_matrix @ weights\n\ndef minimize_variance(cov_matrix):\n    num_assets = cov_matrix.shape[0]\n    args = (cov_matrix,)\n    constraints = ({'type': 'eq', 'fun': lambda weights: np.sum(weights) - 1})\n    bounds = tuple((0, 1) for asset in range(num_assets))\n    initial_guess = num_assets * [1. / num_assets,]\n    result = minimize(portfolio_variance, initial_guess, args=args, method='SLSQP', bounds=bounds, constraints=constraints)\n    return result.x"
+    }
+]

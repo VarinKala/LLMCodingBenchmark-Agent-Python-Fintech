@@ -1,0 +1,127 @@
+[
+    {
+        "id": "FT_01",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\n\ndef calculate_rsi(prices, window=14):\n    \"\"\"\n    Calculate the Relative Strength Index (RSI) using Wilder's Smoothing.\n\n    Args:\n    - prices (pandas.Series): A series of prices.\n    - window (int, optional): The window size for the RSI calculation. Defaults to 14.\n\n    Returns:\n    - pandas.Series: The RSI values.\n    \"\"\"\n    delta = prices.diff(1)\n    up, down = delta.copy(), delta.copy()\n    up[up < 0] = 0\n    down[down > 0] = 0\n\n    roll_up1 = up.ewm(com=window-1, min_periods=window, adjust=False).mean()\n    roll_down1 = down.ewm(com=window-1, min_periods=window, adjust=False).mean().abs()\n\n    RS = roll_up1 / roll_down1\n    RSI = 100.0 - (100.0 / (1.0 + RS))\n\n    return RSI"
+    },
+    {
+        "id": "FT_02",
+        "pass_at_1": 100.0,
+        "sample_code": "import math\nfrom scipy.stats import norm\n\ndef black_scholes_call(S, K, T, r, sigma):\n    \"\"\"\n    Calculate the price of a European Call Option using the Black-Scholes formula.\n\n    Args:\n        S (float): Current stock price\n        K (float): Strike price\n        T (float): Time to maturity (in years)\n        r (float): Risk-free interest rate\n        sigma (float): Volatility of the stock\n\n    Returns:\n        float: Price of the European Call Option\n    \"\"\"\n    d1 = (math.log(S / K) + (r + sigma ** 2 / 2) * T) / (sigma * math.sqrt(T))\n    d2 = d1 - sigma * math.sqrt(T)\n    return S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2)"
+    },
+    {
+        "id": "FT_03",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nfrom scipy.stats import norm\n\ndef european_option_gamma(S, K, T, r, sigma, option_type):\n    \"\"\"\n    Calculate the Gamma of a European Option.\n\n    Parameters:\n    S (float): Spot price of the underlying asset.\n    K (float): Strike price of the option.\n    T (float): Time to maturity in years.\n    r (float): Risk-free interest rate.\n    sigma (float): Volatility of the underlying asset.\n    option_type (str): Type of option, either 'call' or 'put'.\n\n    Returns:\n    float: Gamma of the European Option.\n    \"\"\"\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n    d2 = d1 - sigma * np.sqrt(T)\n    gamma = np.exp(-r * T) * norm.pdf(d1) / (S * sigma * np.sqrt(T))\n    return gamma"
+    },
+    {
+        "id": "FT_04",
+        "pass_at_1": 90.0,
+        "sample_code": "import numpy as np\n\ndef calculate_sharpe_ratio(daily_returns, risk_free_rate=0):\n    \"\"\"\n    Calculate the annualized Sharpe Ratio given a series of daily returns.\n\n    Parameters:\n    daily_returns (array-like): Series of daily returns.\n    risk_free_rate (float, optional): Daily risk-free rate. Defaults to 0.\n\n    Returns:\n    float: Annualized Sharpe Ratio.\n    \"\"\"\n    daily_sharpe_ratio = (np.mean(daily_returns - risk_free_rate) / np.std(daily_returns)) * np.sqrt(252)\n    return daily_sharpe_ratio"
+    },
+    {
+        "id": "FT_05",
+        "pass_at_1": 60.0,
+        "sample_code": "import numpy as np\n\ndef compute_log_returns(price_series):\n    \"\"\"\n    Compute log returns from a price series.\n    \n    Parameters:\n    price_series (array-like): Price series.\n    \n    Returns:\n    array-like: Log returns of the price series.\n    \"\"\"\n    price_series = np.array(price_series)\n    return np.log(price_series[1:] / price_series[:-1])"
+    },
+    {
+        "id": "FT_06",
+        "pass_at_1": 50.0,
+        "sample_code": "import pandas as pd\n\ndef calculate_bollinger_bands(data, window=20, std_dev=2):\n    \"\"\"\n    Calculate Bollinger Bands (Upper, Middle, Lower) for a given window and standard deviations.\n\n    Parameters:\n    data (pd.Series): Input data, typically a stock's closing prices.\n    window (int): Window size for the moving average calculation. Default is 20.\n    std_dev (int): Number of standard deviations for the bands. Default is 2.\n\n    Returns:\n    pd.DataFrame: DataFrame containing the upper, middle, and lower Bollinger Bands.\n    \"\"\"\n    # Calculate the moving average\n    middle_band = data.rolling(window).mean()\n\n    # Calculate the standard deviation\n    std = data.rolling(window).std()\n\n    # Calculate the upper and lower bands\n    upper_band = middle_band + std * std_dev\n    lower_band = middle_band - std * std_dev\n\n    # Return the Bollinger Bands as a DataFrame\n    return pd.DataFrame({\n        'Upper': upper_band,\n        'Middle': middle_band,\n        'Lower': lower_band\n    })"
+    },
+    {
+        "id": "FT_07",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nfrom scipy.stats import norm\n\ndef calculate_parametric_var(mean_return, volatility, confidence_level=0.95, portfolio_value=1):\n    \"\"\"\n    Calculate the 95% Parametric VaR for a portfolio.\n\n    Parameters:\n    mean_return (float): The mean return of the portfolio.\n    volatility (float): The volatility of the portfolio.\n    confidence_level (float, optional): The confidence level. Defaults to 0.95.\n    portfolio_value (float, optional): The value of the portfolio. Defaults to 1.\n\n    Returns:\n    float: The Parametric VaR.\n    \"\"\"\n    z_score = norm.ppf(1 - confidence_level)\n    var = portfolio_value * (mean_return + z_score * volatility)\n    return var"
+    },
+    {
+        "id": "FT_08",
+        "pass_at_1": 40.0,
+        "sample_code": "import pandas as pd\n\ndef identify_golden_cross(data, short_window=50, long_window=200):\n    \"\"\"\n    Identify points where a short_window-day SMA crosses above a long_window-day SMA (Golden Cross).\n\n    Args:\n        data (pandas.Series): The time series data to analyze.\n        short_window (int, optional): The window for the short SMA. Defaults to 50.\n        long_window (int, optional): The window for the long SMA. Defaults to 200.\n\n    Returns:\n        pandas.Series: A boolean series indicating where the Golden Cross occurred.\n    \"\"\"\n    # Calculate the short and long window SMAs\n    short_sma = data.rolling(window=short_window).mean()\n    long_sma = data.rolling(window=long_window).mean()\n\n    # Shift the SMAs by 1 to compare with the previous day's values\n    short_sma_shifted = short_sma.shift(1)\n    long_sma_shifted = long_sma.shift(1)\n\n    # Identify where the short SMA crosses above the long SMA\n    golden_cross = (short_sma > long_sma) & (short_sma_shifted <= long_sma_shifted)\n\n    return golden_cross"
+    },
+    {
+        "id": "FT_09",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy_financial as npf\n\ndef calculate_irr(cash_flows):\n    \"\"\"\n    Calculate the Internal Rate of Return (IRR) for a series of cash flows.\n\n    Parameters:\n    cash_flows (list): A list of cash flows. The first element is the initial investment, \n                       and the rest are the cash flows.\n\n    Returns:\n    float: The Internal Rate of Return (IRR) for the given cash flows.\n    \"\"\"\n    irr = npf.irr(cash_flows)\n    return irr\n\n# Example usage:\ncash_flows = [-100, 30, 40, 50, 60]\nirr = calculate_irr(cash_flows)\nprint(\"IRR:\", irr)"
+    },
+    {
+        "id": "FT_10",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_mdd(price_series):\n    \"\"\"\n    Calculate the Maximum Drawdown (MDD) from a peak to a trough for a price series.\n\n    Parameters:\n    price_series (list): A list of prices\n\n    Returns:\n    float: The maximum drawdown\n    \"\"\"\n    if not price_series:\n        return 0\n\n    peak = price_series[0]\n    max_drawdown = 0\n\n    for price in price_series:\n        if price > peak:\n            peak = price\n        else:\n            drawdown = (peak - price) / peak\n            max_drawdown = max(max_drawdown, drawdown)\n\n    return max_drawdown\n\n# Example usage:\nprice_series = [100, 120, 110, 130, 140, 120, 100, 110, 130]\nprint(calculate_mdd(price_series))"
+    },
+    {
+        "id": "FT_11",
+        "pass_at_1": 80.0,
+        "sample_code": "import numpy as np\nfrom scipy.optimize import newton\n\ndef black_scholes(S, K, T, r, sigma, option_type):\n    \"\"\"\n    Black-Scholes model for European options.\n\n    Args:\n    S (float): Underlying asset price.\n    K (float): Strike price.\n    T (float): Time to maturity in years.\n    r (float): Risk-free interest rate.\n    sigma (float): Volatility of the underlying asset.\n    option_type (str): Type of option, either 'call' or 'put'.\n\n    Returns:\n    float: Option price.\n    \"\"\"\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n    d2 = d1 - sigma * np.sqrt(T)\n\n    if option_type == 'call':\n        return S * np.exp(-0.5 * d1 ** 2) * np.exp(-0.5 * d2 ** 2) / np.sqrt(2 * np.pi) * np.exp(r * T) - K * np.exp(-r * T) * np.exp(-0.5 * d2 ** 2) / np.sqrt(2 * np.pi)\n    elif option_type == 'put':\n        return K * np.exp(-r * T) * np.exp(-0.5 * d2 ** 2) / np.sqrt(2 * np.pi) - S * np.exp(-0.5 * d1 ** 2) * np.exp(-0.5 * d2 ** 2) / np.sqrt(2 * np.pi) * np.exp(r * T)\n    else:\n        raise ValueError(\"Invalid option type. Must be 'call' or 'put'.\")\n\ndef vega(S, K, T, r, sigma, option_type):\n    \"\"\"\n    Vega of the Black-Scholes model.\n\n    Args:\n    S (float): Underlying asset price.\n    K (float): Strike price.\n    T (float): Time to maturity in years.\n    r (float): Risk-free interest rate.\n    sigma (float): Volatility of the underlying asset.\n    option_type (str): Type of option, either 'call' or 'put'.\n\n    Returns:\n    float: Vega of the option.\n    \"\"\"\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n\n    if option_type == 'call' or option_type == 'put':\n        return S * np.exp(-0.5 * d1 ** 2) / np.sqrt(2 * np.pi) * np.sqrt(T)\n    else:\n        raise ValueError(\"Invalid option type. Must be 'call' or 'put'.\")\n\ndef implied_volatility(S, K, T, r, market_price, option_type, initial_guess=0.2, max_iter=1000, tol=1e-8):\n    \"\"\"\n    Implied volatility using a Newton-Raphson solver.\n\n    Args:\n    S (float): Underlying asset price.\n    K (float): Strike price.\n    T (float): Time to maturity in years.\n    r (float): Risk-free interest rate.\n    market_price (float): Market price of the option.\n    option_type (str): Type of option, either 'call' or 'put'.\n    initial_guess (float): Initial guess for the volatility. Defaults to 0.2.\n    max_iter (int): Maximum number of iterations. Defaults to 1000.\n    tol (float): Tolerance for convergence. Defaults to 1e-8.\n\n    Returns:\n    float: Implied volatility.\n    \"\"\"\n    def f(sigma):\n        return black_scholes(S, K, T, r, sigma, option_type) - market_price\n\n    def f_prime(sigma):\n        return vega(S, K, T, r, sigma, option_type)\n\n    return newton(f, initial_guess, fprime=f_prime, maxiter=max_iter, tol=tol)\n\n# Example usage\nS = 100\nK = 100\nT = 1\nr = 0.05\nmarket_price = 10\noption_type = 'call'\n\nimplied_vol = implied_volatility(S, K, T, r, market_price, option_type)\nprint(f\"Implied volatility: {implied_vol:.4f}\")"
+    },
+    {
+        "id": "FT_12",
+        "pass_at_1": 90.0,
+        "sample_code": "import numpy as np\nimport pandas as pd\n\ndef calculate_beta(stock_returns, market_returns):\n    \"\"\"\n    Calculate the Beta of a stock relative to the market index using covariance/variance.\n\n    Args:\n    stock_returns (pd.Series or np.array): The daily returns of the stock.\n    market_returns (pd.Series or np.array): The daily returns of the market index.\n\n    Returns:\n    float: The Beta of the stock.\n    \"\"\"\n    # Calculate the covariance between stock returns and market returns\n    cov_stock_market = np.cov(stock_returns, market_returns)[0, 1]\n    \n    # Calculate the variance of the market returns\n    var_market = np.var(market_returns)\n    \n    # Calculate Beta\n    beta = cov_stock_market / var_market\n    \n    return beta\n\n# Example usage:\nstock_returns = pd.Series([0.01, 0.02, -0.03, 0.04, 0.05])\nmarket_returns = pd.Series([0.005, 0.01, -0.02, 0.03, 0.04])\n\nbeta = calculate_beta(stock_returns, market_returns)\nprint(\"Beta:\", beta)"
+    },
+    {
+        "id": "FT_13",
+        "pass_at_1": 90.0,
+        "sample_code": "import numpy as np\n\ndef simulate_garch11(T, omega, alpha, beta, r0, mu):\n    \"\"\"\n    Simulate a GARCH(1,1) process.\n\n    Parameters:\n    T (int): Number of steps to simulate.\n    omega (float): Constant variance term.\n    alpha (float): Lagged squared return term.\n    beta (float): Lagged variance term.\n    r0 (float): Initial return.\n    mu (float): Mean return.\n\n    Returns:\n    r (numpy array): Simulated returns.\n    sigma (numpy array): Simulated volatilities.\n    \"\"\"\n    r = np.zeros(T)\n    sigma = np.zeros(T)\n    sigma[0] = np.sqrt(omega / (1 - alpha - beta))\n    r[0] = mu + sigma[0] * np.random.normal()\n\n    for t in range(1, T):\n        sigma[t] = np.sqrt(omega + alpha * (r[t-1] - mu)**2 + beta * sigma[t-1]**2)\n        r[t] = mu + sigma[t] * np.random.normal()\n\n    return r, sigma"
+    },
+    {
+        "id": "FT_14",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\n\ndef sortino_ratio(returns, risk_free_rate=0, target_return=0):\n    \"\"\"\n    Calculate the Sortino Ratio focusing only on downside risk (returns < 0).\n\n    Parameters:\n    returns (array-like): Array of returns\n    risk_free_rate (float, optional): Risk-free rate. Defaults to 0.\n    target_return (float, optional): Target return. Defaults to 0.\n\n    Returns:\n    float: Sortino Ratio\n    \"\"\"\n    # Calculate the downside volatility\n    downside_returns = np.array([return_ if return_ < target_return else 0 for return_ in returns])\n    downside_volatility = np.std(downside_returns)\n\n    # Calculate the excess return\n    excess_return = np.mean(returns) - risk_free_rate\n\n    # Calculate the Sortino Ratio\n    sortino_ratio = excess_return / downside_volatility\n\n    return sortino_ratio"
+    },
+    {
+        "id": "FT_15",
+        "pass_at_1": 80.0,
+        "sample_code": "def adjust_historical_prices(prices, split_ratio):\n    \"\"\"\n    Adjusts historical prices given a stock split ratio.\n\n    Args:\n    prices (list): A list of historical prices.\n    split_ratio (float): The stock split ratio.\n\n    Returns:\n    list: The adjusted historical prices.\n    \"\"\"\n    if split_ratio <= 0:\n        raise ValueError(\"Split ratio must be greater than 0\")\n\n    adjusted_prices = [price * split_ratio for price in prices]\n    return adjusted_prices\n\n# Example usage:\nhistorical_prices = [10.0, 12.0, 15.0, 18.0, 20.0]\nsplit_ratio = 2.0  # 2-for-1 stock split\n\nadjusted_prices = adjust_historical_prices(historical_prices, split_ratio)\nprint(adjusted_prices)"
+    },
+    {
+        "id": "FT_16",
+        "pass_at_1": 0.0,
+        "sample_code": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef pca_swap_rate_yield_curve(swap_rates):\n    \"\"\"\n    Use PCA to find the first 3 principal components of a swap rate yield curve.\n\n    Parameters:\n    swap_rates (numpy array): Swap rates with shape (n_samples, n_terms)\n\n    Returns:\n    principal_components (numpy array): The first 3 principal components with shape (n_terms, 3)\n    \"\"\"\n    # Standardize the swap rates\n    standardized_swap_rates = (swap_rates - np.mean(swap_rates, axis=0)) / np.std(swap_rates, axis=0)\n\n    # Perform PCA\n    pca = PCA(n_components=3)\n    principal_components = pca.fit_transform(standardized_swap_rates).T\n\n    return principal_components\n\n# Example usage\nif __name__ == \"__main__\":\n    # Generate random swap rates\n    np.random.seed(0)\n    n_samples = 100\n    n_terms = 10\n    swap_rates = np.random.rand(n_samples, n_terms)\n\n    # Find the first 3 principal components\n    principal_components = pca_swap_rate_yield_curve(swap_rates)\n\n    # Plot the principal components\n    plt.figure(figsize=(10, 6))\n    for i in range(3):\n        plt.plot(principal_components[:, i], label=f'Principal Component {i+1}')\n    plt.xlabel('Term')\n    plt.ylabel('Value')\n    plt.title('First 3 Principal Components of the Swap Rate Yield Curve')\n    plt.legend()\n    plt.show()"
+    },
+    {
+        "id": "FT_17",
+        "pass_at_1": 100.0,
+        "sample_code": "def macaulay_duration(face_value, annual_coupon, annual_yield, years_to_maturity):\n    \"\"\"\n    Calculate Macaulay Duration for a bond with fixed annual coupons.\n\n    Args:\n        face_value (float): Face value of the bond.\n        annual_coupon (float): Annual coupon rate of the bond.\n        annual_yield (float): Annual yield to maturity of the bond.\n        years_to_maturity (int): Number of years until the bond matures.\n\n    Returns:\n        float: Macaulay Duration of the bond.\n    \"\"\"\n    # Calculate the present value of the bond's cash flows\n    cash_flows = [annual_coupon * face_value] * years_to_maturity + [face_value + annual_coupon * face_value]\n    present_values = [cf / (1 + annual_yield) ** (i + 1) for i, cf in enumerate(cash_flows)]\n\n    # Calculate the Macaulay Duration\n    duration = sum([(i + 1) * pv for i, pv in enumerate(present_values)]) / sum(present_values)\n\n    return duration"
+    },
+    {
+        "id": "FT_18",
+        "pass_at_1": 70.0,
+        "sample_code": "import numpy as np\n\ndef standardize_returns(returns):\n    \"\"\"\n    Standardize returns by subtracting the mean and dividing by the standard deviation.\n\n    Args:\n        returns (numpy.ndarray): Array of returns.\n\n    Returns:\n        numpy.ndarray: Standardized returns.\n    \"\"\"\n    mean = np.mean(returns)\n    std = np.std(returns)\n    return (returns - mean) / std"
+    },
+    {
+        "id": "FT_19",
+        "pass_at_1": 20.0,
+        "sample_code": "import pandas as pd\nimport numpy as np\nimport yfinance as yf\nfrom scipy.stats import spearmanr\n\ndef compute_spearman_rank_correlation(stocks, start_date, end_date):\n    \"\"\"\n    Compute a Spearman rank correlation matrix for a portfolio of stocks.\n\n    Parameters:\n    stocks (list): List of stock tickers\n    start_date (str): Start date for data retrieval\n    end_date (str): End date for data retrieval\n\n    Returns:\n    pandas.DataFrame: Spearman rank correlation matrix\n    \"\"\"\n    # Retrieve stock data\n    data = yf.download(stocks, start=start_date, end=end_date)['Adj Close']\n\n    # Compute daily returns\n    returns = data.pct_change().dropna()\n\n    # Compute Spearman rank correlation matrix\n    corr_matrix = returns.corr(method='spearman')\n\n    return corr_matrix\n\n# Example usage\nstocks = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'FB']\nstart_date = '2020-01-01'\nend_date = '2022-02-26'\n\ncorr_matrix = compute_spearman_rank_correlation(stocks, start_date, end_date)\nprint(corr_matrix)"
+    },
+    {
+        "id": "FT_20",
+        "pass_at_1": 90.0,
+        "sample_code": "import numpy as np\n\ndef calculate_information_ratio(portfolio_returns, benchmark_returns):\n    \"\"\"\n    Calculate the Information Ratio.\n\n    Parameters:\n    portfolio_returns (numpy array): Array of portfolio returns.\n    benchmark_returns (numpy array): Array of benchmark returns.\n\n    Returns:\n    float: Information Ratio.\n    \"\"\"\n    # Calculate the difference between portfolio returns and benchmark returns\n    excess_returns = portfolio_returns - benchmark_returns\n    \n    # Calculate the average excess return\n    avg_excess_return = np.mean(excess_returns)\n    \n    # Calculate the tracking error (standard deviation of excess returns)\n    tracking_error = np.std(excess_returns)\n    \n    # Calculate the Information Ratio\n    information_ratio = avg_excess_return / tracking_error\n    \n    return information_ratio"
+    },
+    {
+        "id": "FT_21",
+        "pass_at_1": 100.0,
+        "sample_code": "def calculate_atr(high, low, close, period=14):\n    \"\"\"\n    Calculate the Average True Range (ATR) using High, Low, and Close prices.\n\n    Parameters:\n    high (list): List of high prices\n    low (list): List of low prices\n    close (list): List of close prices\n    period (int): Period for ATR calculation (default: 14)\n\n    Returns:\n    list: List of ATR values\n    \"\"\"\n    tr = []\n    atr = []\n\n    for i in range(len(high)):\n        if i == 0:\n            tr.append(high[i] - low[i])\n        else:\n            tr.append(max(high[i] - low[i], abs(high[i] - close[i-1]), abs(low[i] - close[i-1])))\n\n    for i in range(len(tr)):\n        if i < period - 1:\n            atr.append(0)\n        elif i == period - 1:\n            atr.append(sum(tr[:period]) / period)\n        else:\n            atr.append((atr[i-1] * (period - 1) + tr[i]) / period)\n\n    return atr"
+    },
+    {
+        "id": "FT_22",
+        "pass_at_1": 100.0,
+        "sample_code": "import pandas as pd\n\ndef rolling_correlation(asset1_returns, asset2_returns, window=30):\n    \"\"\"\n    Compute a 30-day rolling correlation between two asset return series.\n\n    Parameters:\n    asset1_returns (pd.Series): Return series of the first asset.\n    asset2_returns (pd.Series): Return series of the second asset.\n    window (int): Number of days for the rolling window. Default is 30.\n\n    Returns:\n    pd.Series: Rolling correlation between the two asset return series.\n    \"\"\"\n    return asset1_returns.rolling(window).corr(asset2_returns)"
+    },
+    {
+        "id": "FT_23",
+        "pass_at_1": 100.0,
+        "sample_code": "def portfolio_variance(w1, w2, s1, s2, cov):\n    \"\"\"\n    Calculate the variance of a 2-asset portfolio.\n\n    Parameters:\n    w1 (float): Weight of the first asset in the portfolio.\n    w2 (float): Weight of the second asset in the portfolio.\n    s1 (float): Standard deviation of the first asset.\n    s2 (float): Standard deviation of the second asset.\n    cov (float): Covariance between the two assets.\n\n    Returns:\n    float: Variance of the portfolio.\n    \"\"\"\n    return w1**2 * s1**2 + w2**2 * s2**2 + 2 * w1 * w2 * cov"
+    },
+    {
+        "id": "FT_24",
+        "pass_at_1": 100.0,
+        "sample_code": "import numpy as np\nfrom scipy.stats import norm\n\ndef european_call_vega(S, K, T, r, sigma):\n    \"\"\"\n    Calculate Vega (sensitivity to volatility) for a European Call.\n\n    Parameters:\n    S (float): Underlying asset price\n    K (float): Strike price\n    T (float): Time to maturity (in years)\n    r (float): Risk-free interest rate\n    sigma (float): Volatility\n\n    Returns:\n    float: Vega of the European Call\n    \"\"\"\n    d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n    vega = S * np.sqrt(T) * norm.pdf(d1)\n    return vega"
+    },
+    {
+        "id": "FT_25",
+        "pass_at_1": 80.0,
+        "sample_code": "import numpy as np\nfrom scipy.optimize import minimize\n\ndef calculate_weights(asset_returns, risk_free_rate=0):\n    \"\"\"\n    Calculate weights for a 2-asset portfolio that minimize variance.\n\n    Parameters:\n    asset_returns (array-like): Array of returns for the two assets.\n    risk_free_rate (float, optional): Risk-free rate. Defaults to 0.\n\n    Returns:\n    array: Weights for the two assets that minimize variance.\n    \"\"\"\n    # Calculate the covariance matrix\n    cov_matrix = np.cov(asset_returns, rowvar=False)\n\n    # Define the function to minimize\n    def variance(weights):\n        return np.dot(weights.T, np.dot(cov_matrix, weights))\n\n    # Define the constraints\n    constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})\n    bounds = tuple((0, 1) for _ in range(len(asset_returns)))\n\n    # Initialize the weights\n    init_weights = np.array([0.5, 0.5])\n\n    # Minimize the variance\n    result = minimize(variance, init_weights, method='SLSQP', bounds=bounds, constraints=constraints)\n\n    return result.x\n\n# Example usage:\nasset_returns = np.array([[0.03, 0.05], [0.02, -0.01]])\nweights = calculate_weights(asset_returns)\nprint(weights)"
+    }
+]
