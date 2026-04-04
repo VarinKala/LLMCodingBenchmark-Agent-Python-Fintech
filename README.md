@@ -143,7 +143,6 @@ Pass@1 (per task) = (successful executions / 10) × 100%
 
 ### Notable Observations
 
-- **FT_19 (Spearman Correlation)**: Llama scored only 20% — its implementations frequently fetched live data via `yfinance`, causing network timeouts inside the executor sandbox.
 - **Qwen** was the strongest zero-shot model at 96.00% Pass@1 and the highest DWS score of **0.2659**, consistently generating concise, library-idiomatic code closest to the reference implementations.
 - **Llama** was identified as the **weakest model** (81.60% Pass@1, DWS 0.1987) and was selected as the programmer agent in the MAS to demonstrate improvement.
 
