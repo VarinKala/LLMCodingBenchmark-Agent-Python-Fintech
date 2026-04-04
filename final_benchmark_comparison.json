@@ -1,0 +1,34 @@
+{
+    "gemini_zero_shot_results": {
+        "Pass@1": "86.40%",
+        "Extended_CodeBleu_DWS": 0.1884,
+        "Metadata": {
+            "Tasks_Count": 25,
+            "Source_File": "gemini_zero_shot_results.json"
+        }
+    },
+    "llama_zero_shot_results": {
+        "Pass@1": "81.60%",
+        "Extended_CodeBleu_DWS": 0.1987,
+        "Metadata": {
+            "Tasks_Count": 25,
+            "Source_File": "llama_zero_shot_results.json"
+        }
+    },
+    "qwen_zero_shot_results": {
+        "Pass@1": "96.00%",
+        "Extended_CodeBleu_DWS": 0.2659,
+        "Metadata": {
+            "Tasks_Count": 25,
+            "Source_File": "qwen_zero_shot_results.json"
+        }
+    },
+    "agentic_mas_results": {
+        "Pass@1": "87.20%",
+        "Extended_CodeBleu_DWS": 0.198,
+        "Metadata": {
+            "Tasks_Count": 25,
+            "Source_File": "agentic_mas_results.json"
+        }
+    }
+}

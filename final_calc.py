@@ -103,8 +103,7 @@ if __name__ == "__main__":
     results_to_process = [
         "gemini_zero_shot_results.json",
         "llama_zero_shot_results.json",
-        "qwen_zero_shot_results.json"
-#        "agentic_mas_results.json"
-    ]
+        "qwen_zero_shot_results.json",
+        "agentic_mas_results.json" ]
     
     generate_report("fintech_benchmark.json", results_to_process)
